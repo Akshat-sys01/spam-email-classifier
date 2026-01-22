@@ -1,0 +1,6 @@
+services:
+- type: web
+name: spam_email_classifier
+env: python
+buildCommand: pip install -r requirements.txt
+startCommand: gunicorn webapp.wsgi:application
