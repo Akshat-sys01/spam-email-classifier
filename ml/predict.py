@@ -56,4 +56,4 @@ def predict_spam(text):
     clean_text = preprocess_text(text)
     vectorized_text = vectorizer.transform([clean_text])
     prediction = model.predict(vectorized_text)[0]
-    return "Spam" if p
+    return "Spam" if prediction == 1 else "Not Spam"
