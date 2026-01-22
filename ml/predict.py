@@ -1,6 +1,8 @@
 import pickle
 import string
 import os
+os.environ["NLTK_DATA"] = "/opt/render/nltk_data"
+
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
