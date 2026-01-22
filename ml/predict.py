@@ -4,7 +4,7 @@ import os
 import nltk
 
 # --------------------------------------------------
-# NLTK configuration (NO downloads here)
+# NLTK configuration
 # --------------------------------------------------
 NLTK_DATA_PATH = "/opt/render/nltk_data"
 os.environ["NLTK_DATA"] = NLTK_DATA_PATH
@@ -20,10 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "ml", "model.pkl")
 
 # --------------------------------------------------
-# Lazy-loaded model
+# Lazy-loaded globals
 # --------------------------------------------------
 model = None
 vectorizer = None
+stop_words = None
 
 def load_model():
     global model, vectorizer
@@ -31,15 +32,16 @@ def load_model():
         with open(MODEL_PATH, "rb") as f:
             model, vectorizer = pickle.load(f)
 
-# --------------------------------------------------
-# Load stopwords ONCE (no download fallback)
-# --------------------------------------------------
-stop_words = set(stopwords.words("english"))
+def load_stopwords():
+    global stop_words
+    if stop_words is None:
+        stop_words = set(stopwords.words("english"))
 
 # --------------------------------------------------
 # Preprocessing
 # --------------------------------------------------
 def preprocess_text(text):
+    load_stopwords()
     text = text.lower()
     text = text.translate(str.maketrans("", "", string.punctuation))
     tokens = word_tokenize(text)
@@ -54,4 +56,4 @@ def predict_spam(text):
     clean_text = preprocess_text(text)
     vectorized_text = vectorizer.transform([clean_text])
     prediction = model.predict(vectorized_text)[0]
-    return "Spam" if prediction == 1 else "Not Spam"
+    return "Spam" if p
