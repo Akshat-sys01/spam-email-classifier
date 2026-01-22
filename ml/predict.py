@@ -1,27 +1,26 @@
 import pickle
 import string
 import os
-os.environ["NLTK_DATA"] = "/opt/render/nltk_data"
+import nltk
+
+NLTK_DATA_PATH = "/opt/render/nltk_data"
+os.environ["NLTK_DATA"] = NLTK_DATA_PATH
+nltk.data.path.append(NLTK_DATA_PATH)
 
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-# --------------------------------------------------
-# Paths
-# --------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "ml", "model.pkl")
 
-# --------------------------------------------------
-# Load model & vectorizer ONCE (IMPORTANT)
-# --------------------------------------------------
 with open(MODEL_PATH, "rb") as f:
     model, vectorizer = pickle.load(f)
 
-# --------------------------------------------------
-# Preprocessing
-# --------------------------------------------------
-stop_words = set(stopwords.words("english"))
+try:
+    stop_words = set(stopwords.words("english"))
+except LookupError:
+    nltk.download("stopwords", download_dir=NLTK_DATA_PATH)
+    stop_words = set(stopwords.words("english"))
 
 def preprocess_text(text):
     text = text.lower()
@@ -30,9 +29,6 @@ def preprocess_text(text):
     tokens = [word for word in tokens if word not in stop_words]
     return " ".join(tokens)
 
-# --------------------------------------------------
-# Prediction
-# --------------------------------------------------
 def predict_spam(text):
     clean_text = preprocess_text(text)
     vectorized_text = vectorizer.transform([clean_text])
