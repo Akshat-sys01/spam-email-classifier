@@ -5,7 +5,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(os.path.join(BASE_DIR, 'ml'))
 
-from predict import predict_spam
+from ml.predict import predict_spam
 
 # Create your views here.
 def home(request):
