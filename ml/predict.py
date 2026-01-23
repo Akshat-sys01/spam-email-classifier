@@ -32,16 +32,26 @@ def load_model():
             model, vectorizer = pickle.load(f)
 
 # -------------------------------
-# LOAD STOPWORDS SAFELY
+# ENSURE NLTK RESOURCES (KEY FIX)
 # -------------------------------
-def get_stopwords():
+def ensure_nltk_resources():
+    # tokenizer (punkt + punkt_tab)
     try:
-        return set(stopwords.words("english"))
+        word_tokenize("test")
+    except LookupError:
+        nltk.download("punkt", download_dir=NLTK_DATA_PATH)
+        nltk.download("punkt_tab", download_dir=NLTK_DATA_PATH)
+
+    # stopwords
+    try:
+        stopwords.words("english")
     except LookupError:
         nltk.download("stopwords", download_dir=NLTK_DATA_PATH)
-        return set(stopwords.words("english"))
 
-stop_words = get_stopwords()
+ensure_nltk_resources()
+
+# Load stopwords AFTER ensuring resources
+stop_words = set(stopwords.words("english"))
 
 # -------------------------------
 # PREPROCESS
