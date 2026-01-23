@@ -99,6 +99,16 @@
 </div>
 
 <script>
+const body = document.getElementById("body");
+
+// Restore theme on page load
+document.addEventListener("DOMContentLoaded", function () {
+    const theme = localStorage.getItem("theme");
+    if (theme === "dark") {
+        body.classList.add("dark-mode");
+    }
+});
+
 function updateCounter() {
     document.getElementById("charCount").innerText =
         document.getElementById("emailText").value.length;
@@ -115,7 +125,14 @@ function showSpinner() {
 }
 
 function toggleDarkMode() {
-    document.getElementById("body").classList.toggle("dark-mode");
+    body.classList.toggle("dark-mode");
+
+    // Save preference
+    if (body.classList.contains("dark-mode")) {
+        localStorage.setItem("theme", "dark");
+    } else {
+        localStorage.setItem("theme", "light");
+    }
 }
 
 function fillExample(text) {
