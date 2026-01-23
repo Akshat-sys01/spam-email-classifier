@@ -16,7 +16,7 @@ def home(request):
 
         except Exception as e:
             error = str(e)
-            print("Prediction error:", e)  # IMPORTANT for Render logs
+            print("Prediction error:", e)
 
     return render(request, "home.html", {
         "result": result,

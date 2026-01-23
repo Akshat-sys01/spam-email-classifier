@@ -3,9 +3,9 @@ import string
 import os
 import nltk
 
-# --------------------------------------------------
-# NLTK configuration
-# --------------------------------------------------
+# -------------------------------
+# NLTK CONFIG (VERY IMPORTANT)
+# -------------------------------
 NLTK_DATA_PATH = "/opt/render/nltk_data"
 os.environ["NLTK_DATA"] = NLTK_DATA_PATH
 nltk.data.path.append(NLTK_DATA_PATH)
@@ -13,18 +13,17 @@ nltk.data.path.append(NLTK_DATA_PATH)
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 
-# --------------------------------------------------
-# Paths
-# --------------------------------------------------
+# -------------------------------
+# PATHS
+# -------------------------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "ml", "model.pkl")
 
-# --------------------------------------------------
-# Lazy-loaded globals
-# --------------------------------------------------
+# -------------------------------
+# LOAD MODEL (LAZY)
+# -------------------------------
 model = None
 vectorizer = None
-stop_words = None
 
 def load_model():
     global model, vectorizer
@@ -32,25 +31,31 @@ def load_model():
         with open(MODEL_PATH, "rb") as f:
             model, vectorizer = pickle.load(f)
 
-def load_stopwords():
-    global stop_words
-    if stop_words is None:
-        stop_words = set(stopwords.words("english"))
+# -------------------------------
+# LOAD STOPWORDS SAFELY
+# -------------------------------
+def get_stopwords():
+    try:
+        return set(stopwords.words("english"))
+    except LookupError:
+        nltk.download("stopwords", download_dir=NLTK_DATA_PATH)
+        return set(stopwords.words("english"))
 
-# --------------------------------------------------
-# Preprocessing
-# --------------------------------------------------
+stop_words = get_stopwords()
+
+# -------------------------------
+# PREPROCESS
+# -------------------------------
 def preprocess_text(text):
-    load_stopwords()
     text = text.lower()
     text = text.translate(str.maketrans("", "", string.punctuation))
     tokens = word_tokenize(text)
     tokens = [word for word in tokens if word not in stop_words]
     return " ".join(tokens)
 
-# --------------------------------------------------
-# Prediction
-# --------------------------------------------------
+# -------------------------------
+# PREDICT
+# -------------------------------
 def predict_spam(text):
     load_model()
     clean_text = preprocess_text(text)

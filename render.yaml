@@ -7,13 +7,7 @@ services:
       mkdir -p /opt/render/nltk_data
       python - <<EOF
       import nltk
-      nltk.data.path.append("/opt/render/nltk_data")
       nltk.download("punkt", download_dir="/opt/render/nltk_data")
       nltk.download("stopwords", download_dir="/opt/render/nltk_data")
       EOF
-    startCommand: >
-      gunicorn webapp.webapp.wsgi:application
-      --workers 1
-      --threads 1
-      --timeout 120
-      --preload
+    startCommand: gunicorn webapp.webapp.wsgi:application --workers 1 --threads 1 --timeout 120

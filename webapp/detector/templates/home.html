@@ -1,153 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Spam Email Classifier</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Spam Email Classifier</title>
 
-        <!--Bootstrap CSS CDN-->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <style>
-            body.dark-mode {
-                background-color: #121212 !important;
-                color: #ffffff;
-            }
+    <style>
+        body.dark-mode {
+            background-color: #121212 !important;
+            color: #ffffff;
+        }
+        .dark-mode .card {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .char-counter {
+            font-size: 0.85rem;
+            text-align: right;
+            color: gray;
+        }
+    </style>
+</head>
 
-            .dark-mode .card {
-                background-color: #1e1e1e;
-                color: #ffffff;
-            }
+<body class="bg-light" id="body">
 
-            .dark-mode .btn-outline-secondry {
-                color: #ffffff;
-                border-color: #ffffff;
-            }
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-4" style="width:100%; max-width:650px;">
 
-            .dark-mode .btn-outline-secondry:hover {
-                background-color: #ffffff;
-                color: #121212;
-            }
-
-            .dark-mode .btn-outline-secondry:disabled,
-            .dark-mode .btn-outline-secondry {
-                opacity: 1;
-            }
-
-            .char-counter {
-                font-size: 0.85rem;
-                text-align: right;
-                color: gray;
-            }
-        </style>
-    </head>
-
-    <body class="bg-light" id="body">
-
-        <div class="container d-flex justify-content-center align-items-center min-vh-100">
-            <div class="card shadow-lg p-4" style="width: 100%; max-width: 650px;">
-
-                <!--Header-->
-                <div class="d-flex align-items-center mb-3">
-                    <h3>📧 Spam Email Classifier</h3>
-                    <button class="btn btn-outline-secondry btn-sm ms-auto border" onclick="toggleDarkMode()">🌙 Dark Mode</button>
-                </div>
-
-                <!--Example Buttons-->
-                <div class="mb-3">
-                    <button class="btn btn-sm btn-outline-danger me-2" onclick="fillExample('Congratulations! You won a free iPhone. Click now!')">Spam Example</button>
-
-                    <button class="btn btn-sm btn-outline-success" onclick="fillExample('Sir, please find the attached assignment for review.')">Ham Example</button>
-                </div>
-                
-                <!-- Form -->
-                <form method="post" onsubmit="showSpinner()">
-                    {% csrf_token %}
-
-                    <div class="mb-2">
-                        <label class="form-label">Email Text</label>
-                        <textarea class="form-control"
-                        id="emailText"
-                        name="email_text" rows="6" 
-                        maxlength="1000"
-                        placeholder="Paste your email here..." oninput="updateCounter()" required></textarea>
-
-                        <div class="char-counter">
-                            <span id="charCount">0</span> / 1000 characters
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2 mt-3">
-                        <button type="submit" class="btn btn-primary w-100" id="submitBtn">
-                            Check Spam
-                        </button>
-
-                        <button type="button" class="btn btn-outline-secondry w-100 ms-auto border" onclick="clearText()">Clear</button>
-                    </div>
-                </form>
-
-                <!--Loading Spinner-->
-                <div class="text-center mt-3" id="spinner" style="display: none;">
-                    <div class="spinner-border text-primary" role="status"></div>
-                    <p class="mt-2">Analyzing email...</p>
-                </div>
-
-                {% if result %}
-                <div class="mt-4 text-center">
-                    {% if result == "Spam" %}
-                    <div class="alert alert-danger">
-                        🚨 <strong>Spam Detected</strong>
-                    </div>
-                    {% else %}
-                    <div class="alert alert-success">
-                       ✅ <strong>Not Spam</strong>
-                    </div>
-                    {% endif %}
-                </div>
-                {% endif %}
-
-            </div>
+        <div class="d-flex align-items-center mb-3">
+            <h3>📧 Spam Email Classifier</h3>
+            <button class="btn btn-outline-secondary btn-sm ms-auto"
+                    onclick="toggleDarkMode()">🌙 Dark Mode</button>
         </div>
 
-        <!--JavaScript-->
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const theme = localStorage.getItem("theme");
-                if (theme === "dark") {
-                    document.getElementById("body").classList.add("dark-mode");
-                }
-            })
-            function updateCounter() {
-                const text = document.getElementById("emailText").value;
-                document.getElementById("charCount").innerText = text.length;
-            }
+        <div class="mb-3">
+            <button class="btn btn-sm btn-outline-danger me-2"
+                    onclick="fillExample('Congratulations! You won a free iPhone. Click now!')">
+                Spam Example
+            </button>
+            <button class="btn btn-sm btn-outline-success"
+                    onclick="fillExample('Sir, please find the attached assignment for review.')">
+                Ham Example
+            </button>
+        </div>
 
-            function clearText() {
-                document.getElementById("emailText").value = "";
-                updateCounter();
-            }
+        <form method="post" onsubmit="showSpinner()">
+            {% csrf_token %}
 
-            function showSpinner() {
-                const spinner = document.getElementById("spinner");
-                spinner.style.display = "block";
-                document.getElementById("submitBtn").disabled = true;
-            }
+            <label class="form-label">Email Text</label>
+            <textarea class="form-control"
+                      id="emailText"
+                      name="email_text"
+                      rows="6"
+                      maxlength="1000"
+                      oninput="updateCounter()"
+                      required></textarea>
 
-            function toggleDarkMode() {
-                document.getElementById("body").classList.toggle("dark-mode");
+            <div class="char-counter">
+                <span id="charCount">0</span> / 1000 characters
+            </div>
 
-                // Save preference
-                if (body.classList.contains("dark-mode")) {
-                    localStorage.setItem("theme", "dark");
-                } else {
-                    localStorage.setItem("theme", "light");
-                }
-            }
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                    Check Spam
+                </button>
+                <button type="button" class="btn btn-outline-secondary w-100"
+                        onclick="clearText()">Clear</button>
+            </div>
+        </form>
 
-            function fillExample(text) {
-                document.getElementById("emailText").value = text;
-                updateCounter();
-            }
-        </script>
+        <div class="text-center mt-3" id="spinner" style="display:none;">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2">Analyzing email...</p>
+        </div>
 
-    </body>
+        {% if error %}
+        <div class="alert alert-warning mt-3">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div class="mt-4 text-center">
+            {% if result == "Spam" %}
+            <div class="alert alert-danger">
+                🚨 <strong>Spam Detected</strong>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                ✅ <strong>Not Spam</strong>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+function updateCounter() {
+    document.getElementById("charCount").innerText =
+        document.getElementById("emailText").value.length;
+}
+
+function clearText() {
+    document.getElementById("emailText").value = "";
+    updateCounter();
+}
+
+function showSpinner() {
+    document.getElementById("spinner").style.display = "block";
+    document.getElementById("submitBtn").disabled = true;
+}
+
+function toggleDarkMode() {
+    document.getElementById("body").classList.toggle("dark-mode");
+}
+
+function fillExample(text) {
+    document.getElementById("emailText").value = text;
+    updateCounter();
+}
+</script>
+
+</body>
 </html>
